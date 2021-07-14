@@ -1,0 +1,6 @@
+# ignore all .mzn files
+*.mzn
+# ignore all .cvc files
+*.cvc
+# ignore all python log files
+__pycache__
