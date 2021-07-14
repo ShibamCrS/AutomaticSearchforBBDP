@@ -10,3 +10,7 @@ NOTE: For the Ascon cipher, no need to provide division properties in the comman
 We found that the Ascon has division property with almost 308 constants; we put those in a different file named input_division_property.py. 
 To test with Ascon, we need to the following command
 > python3 test.py 320 <round number>
+
+/KNOT/KNOT_extended Directory contains a program to test extended integral attack on KNOT. To test a monomial is even or not we have to provide integer representation of the monomial. For example, to test the monomial x_1x_0, we need to provide 3. So suppose we want to test for x_1x_0 (integer representation 3) and x_2x_1 (integer representation 6) we run the following command
+
+> python3 full_test.py 256 17 3,6
