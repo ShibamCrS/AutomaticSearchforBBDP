@@ -1,3 +1,5 @@
+This repository contains the supporting material of the paper "Automatic Search for Bit-based Division Property", accepted on Latincrypt 2021. 
+
 Each directory with a cipher name contains a file named test.py. This file contains the necessary program to run a test with some initial division property. To start a test, we need to provide the following command:
 > python3 test.py <block_size> <targeted_round> <initial_division_property>
 
