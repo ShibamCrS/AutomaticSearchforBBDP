@@ -1,4 +1,5 @@
 from quine_mccluskey.qm import QuineMcCluskey
+
 class Sbox:
 	def __init__(self,sbox):
 		self.sbox = sbox
@@ -81,7 +82,7 @@ class Sbox:
 			output_vectors = []
 			for j in range(1,self.len):
 				flag = False
-				for k in ANF[j]:
+				for k in ANF[j]: # ANF of PI_j(y)
 					if (i | k) == k: 
 						"""k is in Succ(i)"""
 						flag = True

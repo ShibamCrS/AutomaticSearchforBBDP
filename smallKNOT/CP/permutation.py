@@ -14,6 +14,10 @@ class Permutation:
 			rotation = [0,1,16,25]
 		elif(self.__block_size == 32):
 			rotation = [0,1,5,7]
+		elif(self.__block_size == 8):
+		    rotation = [0,1,0,1] 
+		elif(self.__block_size == 8):
+		    rotation = [0,0,0,0]
 		else:
 			print("Invalid_block_size")
 			exit();

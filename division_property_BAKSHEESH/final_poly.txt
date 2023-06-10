@@ -1,0 +1,5 @@
+The final list of polynomials that we need to consider 
+y_2(x) + y_0(x)  =  x_0 + x_2x_1 + 1
+y_2(x) + y_1(x)  =  x_2x_0 + x_0 + x_1 + 1
+y_2(x) + y_1(x) + y_0(x)  =  x_3
+y_3(x) + y_0(x)  =  x_1x_0 + x_0 + x_1 + x_2 + 1
