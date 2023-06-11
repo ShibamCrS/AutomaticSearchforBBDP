@@ -214,15 +214,20 @@ void set_input(vector<int> &active, int i){
     }
     active[i] = 0;
 }
-void set_output(vector<int> &active, int *V){
+void set_output(vector<int> &active, int *V, int sbox_no){
     for(int i=0; i<STATE; i++){
        active[i] = 0;
     }
     for(int i=0; i<2; i++){
-        active[i] = 1;
+        active[(4*sbox_no) + i] = 1;
     }
 }
-
+void print_prop(vector<int> &A){
+    for (int i=0; i<STATE; i++){
+        printf("%d",A[i]);
+    }
+    printf("\n");
+}
 void test_poly(){
     int rounds = 13;
     vector<int> input(STATE);
@@ -231,15 +236,22 @@ void test_poly(){
     set_input(input,  0);
     int V[6][2] = {{0,1}, {0,2}, {0,3}, {1,2}, {1,3}, {2,3}}; 
     
-    for(int i=0; i<6; i++){
-        set_output(output, V[i]);
-        int balanced = even_polynomial(rounds, input, output);
-        cout << V[i][0] << " " << V[i][1] ;
-        if (balanced == 1){
-            cout << "balanced" << endl;
-        }
-        else{
-            cout << "unknown" << endl;
+    for(int j=0; j<STATE; j++){
+        for(int s=0; s<32; s++){
+            for(int i=0; i<6; i++){
+                set_output(output, V[i], s);
+                print_prop(input);
+                print_prop(output);
+                int balanced = even_polynomial(rounds, input, output);
+                cout << j << " " << V[i][0] << " " << V[i][1] << ":";
+                if (balanced == 1){
+                    cout << "balanced" << endl;
+                    scanf("continue?");
+                }
+                else{
+                    cout << "unknown" << endl;
+                }
+            }
         }
     }
 }
