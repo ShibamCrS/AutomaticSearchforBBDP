@@ -204,8 +204,46 @@ void test(){
         cout <<"\n";
     }
 }
+void test_only_third_bit(){
+    uint8_t input_div[BLOCK];
+    memset(input_div, 0x01, BLOCK);
+
+    uint8_t output_div[BLOCK];
+    memset(output_div, 0x00, BLOCK);
+
+    uint8_t temp[BLOCK];
+    memcpy(temp, input_div, BLOCK);
+    for(int i=0; i<1; i++){
+        memcpy(input_div, temp, BLOCK);
+        input_div[i] = 0x00;
+        print_bit(input_div);
+        vector<int> balanced;
+
+        uint32_t nr_of_balanced = 0;
+        for(int j=0; j<16; j++){
+            memset(output_div, 0x00, BLOCK);
+            output_div[4*j + 3] = 0x01;
+            print_bit(output_div);
+            int res = analysis(input_div, output_div);
+            if(res == 1){
+                printf("UNKNOWN\n");
+            }
+            else{
+                printf("BALANCED\n");
+                balanced.push_back(j);
+                nr_of_balanced++;
+            }
+        }
+        printf("-----%d-----------Total Balanced Bits = %d--------------\n", i, nr_of_balanced);
+        for(auto b: balanced){
+            cout<<b<<" ";
+        }
+        cout <<"\n";
+    }
+}
 
 int main(){
-    test();
+    /* test(); */
+    test_only_third_bit();
 }
 
