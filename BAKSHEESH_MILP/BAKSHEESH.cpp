@@ -219,7 +219,7 @@ void set_output(vector<int> &active, int *V, int sbox_no){
        active[i] = 0;
     }
     for(int i=0; i<2; i++){
-        active[(4*sbox_no) + i] = 1;
+        active[(4*sbox_no) + V[i]] = 1;
     }
 }
 void print_prop(vector<int> &A){
