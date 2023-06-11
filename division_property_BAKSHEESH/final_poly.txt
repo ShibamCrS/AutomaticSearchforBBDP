@@ -1,5 +1,22 @@
 The final list of polynomials that we need to consider 
+
+#BAKSHEESH
 y_2(x) + y_0(x)  =  x_0 + x_2x_1 + 1
 y_2(x) + y_1(x)  =  x_2x_0 + x_0 + x_1 + 1
 y_2(x) + y_1(x) + y_0(x)  =  x_3
 y_3(x) + y_0(x)  =  x_1x_0 + x_0 + x_1 + x_2 + 1
+
+x_2x_1, x_2x_0, x_1x_0
+
+[2,1] [2,0] [1,0]
+
+
+#GIFT
+y_1(x) + y_0(x)  =  x_2x_0 + x_1 + 1
+y_0(x)  =  x_1x_0 + x_0 + x_1 + x_2 + x_3 + 1
+y_2(x)  =  x_3x_0 + x_3x_2x_1 + x_3x_1 + x_1 + x_2
+
+[0,2]
+
+-----0-----------Total Balanced Bits = 30--------------
+3 7 11 15 19 23 27 35 39 43 47 51 55 59 63 71 75 79 83 87 91 95 99 103 107 111 115 119 123 127

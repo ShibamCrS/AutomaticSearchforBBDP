@@ -13,18 +13,20 @@
 #include <math.h>
 #include <cstring>
 
+using std::vector;
+using namespace CMSat;
+using namespace std;
+
 #define THREADS 8
 #define BLOCK 128
 #define CELL 4
 #define N_SBOX 32
 
-#define ROUNDS 13
- 
-using std::vector;
-using namespace CMSat;
-using namespace std;
+/* #define ROUNDS 13 */
+/* #include "constraints_div_BAKSHEESH.h"  //BAKSHEESH */
 
-#include "constraints_div_sbox.h"
+#define ROUNDS 11
+#include "constraints_div_GIFT.h"  //GIFT
 
 void set_initial_conditions(uint32_t *INV, uint32_t *OUTV,
                             uint8_t *input_div, uint8_t *output_div,
@@ -181,16 +183,16 @@ void test(){
         vector<int> balanced;
 
         uint32_t nr_of_balanced = 0;
-        for(int j=0; j<1; j++){
+        for(int j=0; j<BLOCK; j++){
             memset(output_div, 0x00, BLOCK);
             output_div[j] = 0x01;
             print_bit(output_div);
             int res = analysis(input_div, output_div);
             if(res == 1){
-                printf("UNKNOWN\n");
+                printf("%d %d UNKNOWN\n",i, j);
             }
             else{
-                printf("BALANCED\n");
+                printf("%d %d BALANCED\n",i, j);
                 balanced.push_back(j);
                 nr_of_balanced++;
             }
