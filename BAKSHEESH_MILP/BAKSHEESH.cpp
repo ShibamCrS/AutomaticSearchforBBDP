@@ -194,7 +194,7 @@ int even_polynomial(int rounds, vector<int> &input, vector<int> &output){
     if( model.get( GRB_IntAttr_Status ) == GRB_OPTIMAL){
     	double time = model.get(GRB_DoubleAttr_Runtime );
         cout << "Time Used: " << time << "sec" << endl;
-        print_trail(rounds, X, model);
+        /* print_trail(rounds, X, model); */
     }
     else if( model.get( GRB_IntAttr_Status ) == GRB_INFEASIBLE ){
         cout << "Integral Distinguisher Found\n";
