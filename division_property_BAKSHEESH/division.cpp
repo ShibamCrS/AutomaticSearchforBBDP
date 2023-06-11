@@ -22,11 +22,11 @@ using namespace std;
 #define CELL 4
 #define N_SBOX 32
 
-/* #define ROUNDS 13 */
-/* #include "constraints_div_BAKSHEESH.h"  //BAKSHEESH */
+#define ROUNDS 13
+#include "constraints_div_BAKSHEESH.h"  //BAKSHEESH
 
-#define ROUNDS 11
-#include "constraints_div_GIFT.h"  //GIFT
+/* #define ROUNDS 11 */
+/* #include "constraints_div_GIFT.h"  //GIFT */
 
 void set_initial_conditions(uint32_t *INV, uint32_t *OUTV,
                             uint8_t *input_div, uint8_t *output_div,
