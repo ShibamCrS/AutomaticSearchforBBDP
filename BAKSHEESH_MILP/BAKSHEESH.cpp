@@ -1,5 +1,26 @@
 #include "utility.h"
 
+void sbox_new(GRBModel& model, vector<GRBVar>& x, vector<GRBVar>& y)
+{    
+    //found by sage
+    int Ineq[][9] = {
+        {1,1 ,1 ,4 ,1 ,-2 ,-2 ,-2 ,-2 },
+{3,-2 ,-2 ,-2 ,-1 ,1 ,1 ,1 ,1 },
+{1,1 ,4 ,1 ,1 ,-2 ,-2 ,-2 ,-2 },
+{3,3 ,-1 ,-1 ,2 ,-1 ,-1 ,-1 ,-2 },
+{0,0 ,0 ,0 ,-1 ,1 ,1 ,1 ,0 },
+{2,-1 ,1 ,0 ,-1 ,-1 ,1 ,0 ,-1 },
+{5,-2 ,-3 ,-3 ,-2 ,1 ,1 ,1 ,2 },
+{0,-1 ,-1 ,-1 ,-1 ,2 ,2 ,2 ,2 },
+{2,-1 ,-1 ,0 ,-1 ,0 ,0 ,1 ,0 },
+{1,1 ,0 ,0 ,1 ,0 ,-1 ,-1 ,-1 },
+{1,-1 ,-1 ,0 ,0 ,1 ,1 ,0 ,1 },
+{3,-2 ,0 ,-2 ,1 ,1 ,-1 ,1 ,1 }
+    };
+for ( auto it : Ineq )
+    model.addConstr( it[0] + it[1] * x[3] + it[2] * x[2] + it[3] * x[1] + it[4] * x[0] + it[5] * y[3] + it[6] * y[2] + it[7] * y[1] + it[8] * y[0] >= 0 );
+}
+
 void sbox(GRBModel& model, vector<GRBVar>& x, vector<GRBVar>& y)
 {    
     //found by sage
@@ -28,7 +49,7 @@ for ( auto it : Ineq )
     model.addConstr( it[0] + it[1] * x[3] + it[2] * x[2] + it[3] * x[1] + it[4] * x[0] + it[5] * y[3] + it[6] * y[2] + it[7] * y[1] + it[8] * y[0] >= 0 );
 }
 
-void substitution(GRBModel& model, vector<GRBVar>& X, vector<GRBVar>& Y){
+void substitution(GRBModel& model, vector<GRBVar>& X, vector<GRBVar>& Y, int Lin = 0, int Lin_i = 0){
 
 	for(int sbox_nr = 0 ; sbox_nr< 32; sbox_nr++){
 
@@ -44,7 +65,12 @@ void substitution(GRBModel& model, vector<GRBVar>& X, vector<GRBVar>& Y){
 		tmpy[2] = Y[(sbox_nr*4) + 1] ;
 		tmpy[1] = Y[(sbox_nr*4) + 2] ;
 		tmpy[0] = Y[(sbox_nr*4) + 3 ] ;
-		sbox(model, tmpx, tmpy) ; 
+		if ( (Lin == 1) && (Lin_i == sbox_nr) ){
+            sbox_new(model, tmpx, tmpy) ;
+        }
+        else{
+            sbox(model, tmpx, tmpy) ;
+        }
 	}
 }
 
@@ -84,7 +110,10 @@ void division_property(int rounds, vector<int> &active, vector<int> &not_balance
 	vector<GRBVar> Y(STATE);
 	for( int r = 0; r<rounds; r++){
         linear_layer(X[r+1], Y) ;
-        substitution(model, X[r], Y) ;  
+        if (r == 0)
+            substitution(model, X[r], Y, 0, 0) ;  
+        else
+            substitution(model, X[r], Y, 0, 0) ;  
 	}
 	
     //input constraint
@@ -122,6 +151,8 @@ void division_property(int rounds, vector<int> &active, vector<int> &not_balance
             }
             
             else{
+                
+                print_trail(rounds, X, model);
                 for ( int x=0; x<STATE; x++){
                     if ( round( X[rounds][x].get( GRB_DoubleAttr_Xn ) ) == 1 ){
                         counter++;
@@ -222,6 +253,12 @@ void set_output(vector<int> &active, int *V, int sbox_no){
         active[(4*sbox_no) + V[i]] = 1;
     }
 }
+void set_output_one(vector<int> &active, int i){
+    for(int i=0; i<STATE; i++){
+       active[i] = 0;
+    }
+    active[i] = 1;
+}
 void print_prop(vector<int> &A){
     for (int i=0; i<STATE; i++){
         printf("%d",A[i]);
@@ -260,6 +297,9 @@ void test(){
     vector<int > not_balanced;
     vector<int > active(STATE);
     set_input(active, 0);
+    active[4] = 0;
+    print_prop(active);
+    
     division_property(rounds, active, not_balanced);
     printf("Balanced Bits: \n");
     for(int i=0; i<STATE; i++){
@@ -270,7 +310,33 @@ void test(){
     }
     cout<<endl;
 }
+void test_good_input(){
+    int rounds = 13;
+    vector<int> input(STATE);
+    vector<int> output(STATE);
+    
+    vector<int> inputs;
+    set_output_one(output, 0); 
+    for(int j=0; j<STATE; j++){
+        set_input(input,  j);
+        print_prop(input);
+        print_prop(output);
+        int balanced = even_polynomial(rounds, input, output);
+        cout << j << ":";
+        if (balanced == 1){
+            inputs.push_back(j);
+            cout << "balanced" << endl;
+        }
+        else{
+            cout << "unknown" << endl;
+        }
+    }
+    for(int i: inputs)
+            cout << i <<", ";
+    cout << endl;
+}
 int main(){
-    /* test(); */    
-    test_poly();    
+    test();    
+    /* test_good_input(); */
+    /* test_poly(); */    
 }

@@ -46,6 +46,25 @@ class autometic_search:
 		d = d + '| '.join(temp1) + '|] );'
 		return (d)
 		
+	def generate_Out_1(self, R, C):
+		print(C)
+		d = 'round_%d_X = array2d(0..4, 0..63, [|'%(R)
+		temp1 = [ ]
+		temp2 = [ ]
+		for row in range(0,5):
+			temp = [ ]
+			for col in range(0,self.__ns):
+					temp.append('false')
+			temp2.append(temp)
+		for c in C:
+			row = c[0]
+			col = c[1]
+			temp2[row][col] = 'true'
+		for row in range(0,5):
+			temp1.append(', '.join(temp2[row]))
+		d = d + '| '.join(temp1) + '|] );'				
+		return (d)	
+			
 	def get_balanced_bits(self,Round,C):
 		ascon = CIPHER_MODEL(self.__block_size, Round, self.__ns)
 		model = '\n'.join(ascon.get_full_constraints() )
@@ -75,6 +94,41 @@ class autometic_search:
 		time_end = time.time()
 		print("Time used = " + str(time_end - time_start))
 		return (result)
+		
+	def check_output_bit_combinations(self,Round,C):
+		ascon = CIPHER_MODEL(self.__block_size, Round, self.__ns)
+		model = '\n'.join(ascon.get_full_constraints() )
+		temp_model = model + 'solve satisfy;'
+		
+		#print(temp_model)
+		File_model = open(self.__model_file, "w")
+		File_model.write(temp_model)
+		File_model.close()
+		
+		time_start = time.time()
+		input_property = self.generate_In(C)
+		
+		output_comb = [[0,1], [0,2], [0,3], [0,4], [1,2], [1,3], [1,4], [2,3], [2,4], [3,4]] 
+		result =[]
+		for j in range(0,1):
+			for comb in output_comb:
+				B = []	
+				B.append([comb[0],j])
+				B.append([comb[1],j])
+				print(B)
+				input_data = input_property +'\n'+ self.generate_Out_1(Round, B)
+				#print(input_data)
+				R = pymzn.minizinc(temp_model, data = input_data, solver=pymzn.Chuffed(solver_id='chuffed'), parallel ='8')
+				#print(R)
+				if(str(R) == 'UNSATISFIABLE'):
+					result.append(B)
+					print ("Input=> ", C, " Output=> ",B, "***Balanced***")
+				else:
+					print ("Input=> ", " Output=> ",B, "***Unknown***")
+		time_end = time.time()
+		print("Time used = " + str(time_end - time_start))
+		return (result)
+		
 def get_col(t):
 	C = []
 	for i in range(0,5):
@@ -93,15 +147,10 @@ if __name__ == '__main__':
 	number_of_sbox = 64
 	A = autometic_search(cipher_name, block_size, number_of_sbox)
 	number_of_rounds = int(sys.argv[2])
-	
-	"""
-	C = [ ]
-	for i in range(3,64):
-		C = C + get_col(i)
-	C = C + [[1,2],[2,2],[3,2]]
-	"""
-	C = input_property #given in the file name input_division_property.py
+
+	C = input_property2 #given in the file name input_division_property.py
 	print (C, len(C))
-	res = A.get_balanced_bits(number_of_rounds,C)
+	#res = A.get_balanced_bits(number_of_rounds,C)
+	res = A.check_output_bit_combinations(number_of_rounds,C)
 	print (res)
 	print ("Number of balanced bits with input ", C, " = ",len(res))
