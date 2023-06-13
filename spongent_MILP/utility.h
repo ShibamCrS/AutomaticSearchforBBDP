@@ -12,7 +12,7 @@
 #include"gurobi_c++.h" 
 
 using namespace std;
-#define THREAD 32
+#define THREAD 8
 #define STATE 88
 #define SB 22
 
