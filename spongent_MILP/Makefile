@@ -1,4 +1,5 @@
-TARGET=spongent
+# TARGET=spongent
+TARGET=find_Lin
 
 CC=g++
 OPT=-m64 -std=c++11 -O3

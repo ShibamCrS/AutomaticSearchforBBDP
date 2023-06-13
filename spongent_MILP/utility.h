@@ -66,6 +66,19 @@ void print_trail(int rounds, vector<vector<GRBVar>> &X, GRBModel& model){
         cout <<"\n";
     }
 }
+void print_prop(vector<int> &A, FILE *fp=stdout){
+    for (int i=0; i<STATE; i++){
+        fprintf(fp, "%d",A[i]);
+    }
+    fprintf(fp, "\n");
+}
+void print_vec(vector<int> &A, FILE *fp=stdout){
+    for (int i: A){
+        fprintf(fp, "%d, ",A[i]);
+    }
+    fprintf(fp, "\n");
+}
+
 string getCurrentSystemTime()
 {
     auto tt = chrono::system_clock::to_time_t(std::chrono::system_clock::now());
