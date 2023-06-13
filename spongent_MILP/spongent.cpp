@@ -221,6 +221,14 @@ int even_polynomial(int rounds, vector<int> &input, vector<int> &output){
     return balanced;
 }
 
+void set_input_vec(vector<int> &active, vector<int> V){
+    for(int i=0; i<STATE; i++){
+       active[i] = 1;
+    }
+    for(int i: V){
+        active[i] = 0;
+    }
+}
 void set_input(vector<int> &active, int i){
     for(int i=0; i<STATE; i++){
        active[i] = 1;
@@ -278,8 +286,8 @@ void test(){
     int rounds = 9;
     vector<int > not_balanced;
     vector<int > active(STATE);
-    set_input(active, 0);
-    /* active[4] = 0; */
+    vector<int > V = {0,8};
+    set_input_vec(active, V);
     print_prop(active);
     
     division_property(rounds, active, not_balanced);
@@ -318,7 +326,7 @@ void test_good_input(){
     cout << endl;
 }
 int main(){
-    /* test(); */    
-    test_good_input();
+    test();    
+    /* test_good_input(); */
     /* test_poly(); */    
 }
