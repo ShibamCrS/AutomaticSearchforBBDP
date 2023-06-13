@@ -12,7 +12,7 @@
 #include"gurobi_c++.h" 
 
 using namespace std;
-#define THREAD 8
+#define THREAD 48
 #define STATE 88
 #define SB 22
 
@@ -74,7 +74,7 @@ void print_prop(vector<int> &A, FILE *fp=stdout){
 }
 void print_vec(vector<int> &A, FILE *fp=stdout){
     for (int i: A){
-        fprintf(fp, "%d, ",A[i]);
+        fprintf(fp, "%d, ",i);
     }
     fprintf(fp, "\n");
 }
