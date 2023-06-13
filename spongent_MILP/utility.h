@@ -74,7 +74,7 @@ void print_prop(vector<int> &A, FILE *fp=stdout){
 }
 void print_vec(vector<int> &A, FILE *fp=stdout){
     for (int i: A){
-        fprintf(fp, "%d, ",A[i]);
+        fprintf(fp, "%d, ",i);
     }
     fprintf(fp, "\n");
 }
