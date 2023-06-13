@@ -161,8 +161,8 @@ void test(){
     vector<int > Y(STATE);
 
     vector<int > V;
-    for (int i=0; i<SB; i++){
-        for(int j=1; j<16; j++){
+    for (int i=0; i<1; i++){
+        for(int j=8; j<9; j++){
             set_input_from_int(X, j, i);
             linear_layer_2(X, Y);
             not_balanced.clear();
