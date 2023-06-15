@@ -225,7 +225,7 @@ void division_property(int rounds, vector<int> &active, vector<int> &not_balance
                 break;
             }
             else{
-                print_trail(rounds, X, Y, model);
+                /* print_trail(rounds, X, Y, model); */
                 for ( int x=0; x<STATE; x++){
                     if ( round( Y[rounds-1][x].get( GRB_DoubleAttr_Xn ) ) == 1 ){
                         counter++;
@@ -261,7 +261,7 @@ void test(){
     int rounds = 5;
     vector<int > not_balanced;
     vector<int > active(STATE);
-    set_input(active, 15, 320);
+    set_input(active, 12, 320);
     print_prop(active);
     
     division_property(rounds, active, not_balanced);
