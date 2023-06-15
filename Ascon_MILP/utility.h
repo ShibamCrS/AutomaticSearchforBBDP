@@ -88,7 +88,16 @@ void print_trail(int rounds, vector<vector<GRBVar>> &X, vector<vector<GRBVar>> &
         cout <<"\n";
     }
 }
-
+void print_balanced(vector<int> NB){
+    for(int i=0; i<STATE; i++){
+        if (std::find(NB.begin(), NB.end(), i) != NB.end())
+            printf("?");
+        else
+            printf("0");
+        if(i%64 == 63)
+            printf("\n");
+    }
+}
 
 string getCurrentSystemTime()
 {
