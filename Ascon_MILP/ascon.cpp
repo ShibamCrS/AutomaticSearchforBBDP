@@ -94,6 +94,84 @@ void substitution(GRBModel& model, vector<GRBVar>& X, vector<GRBVar>& Y) {
         sbox_h(model, tmpx, tmpy) ; 
     }   
 }
+//starting with a linear layer
+void division_property_1(int rounds, vector<int> &active, vector<int> &not_balanced){
+	GRBEnv env = GRBEnv();
+    env.set(GRB_IntParam_LogToConsole, 0);
+    env.set(GRB_IntParam_Threads, THREAD );
+    
+    GRBModel model = GRBModel(env);
+    //X0 - > SB -> Y0 -> L -> X1 -> SB -> Y1   
+    vector<vector<GRBVar>> X(rounds, vector<GRBVar>(STATE));
+    vector<vector<GRBVar>> Y(rounds, vector<GRBVar>(STATE));
+    for( int r = 0 ; r<rounds; r++){
+        for( int i = 0; i<STATE; i++){
+            X[r][i] = model.addVar(0, 1, 0, GRB_BINARY);
+            Y[r][i] = model.addVar(0, 1, 0, GRB_BINARY);
+        }
+    }
+    
+    for( int r = 0; r<rounds; r++){
+        substitution(model, X[r], Y[r]) ;
+        if(r != (rounds-1))
+            diffusion(model, Y[r], X[r+1]) ;
+    }
+	
+    //input constraint
+    for ( int i = 0; i < STATE; i++ ){
+        if ( active[i] == 0 ){
+            model.addConstr( X[0][i] == 0 );
+        }
+        else{
+            model.addConstr( X[0][i] == 1 );
+        }
+    }
+
+    GRBLinExpr nv = 0;
+    for ( int i = 0; i < STATE; i++ ){
+        nv += Y[rounds-1][i];
+    }
+    // minimize the objective function
+    model.setObjective(  nv, GRB_MINIMIZE );
+    
+    model.write("./data/model.lp");
+    bool flag;
+    int counter = 0;
+    cout << "Not Balanced:\n" << endl;
+    while(counter < STATE){
+        model.update();
+        model.optimize();
+        if ( model.get( GRB_IntAttr_Status ) == GRB_OPTIMAL ){
+            double obj_value = round(model.get(GRB_DoubleAttr_ObjVal));
+            cout << "OBJ " << obj_value <<"=>";
+            if (obj_value > 1){
+                break;
+            }
+            else{
+                print_trail(rounds, X, Y, model);
+                for ( int x=0; x<STATE; x++){
+                    if ( round( Y[rounds-1][x].get( GRB_DoubleAttr_Xn ) ) == 1 ){
+                        counter++;
+                        not_balanced.push_back(x);
+                        //model.addConstr(X[rounds][x] == 0);
+                        Y[rounds-1][x].set(GRB_DoubleAttr_UB, 0);
+                        cout << counter << ":" << x <<"--";
+                        break;
+                    }
+                }
+            }
+        }
+        else if( model.get( GRB_IntAttr_Status ) == GRB_INFEASIBLE ){
+            flag = true;
+            break;
+        }
+        else{
+            cout << "Other status " << GRB_IntAttr_Status <<  endl;
+            exit(-1);
+        }
+    }
+    cout<<endl;
+}
 void division_property(int rounds, vector<int> &active, vector<int> &not_balanced){
 	GRBEnv env = GRBEnv();
     env.set(GRB_IntParam_LogToConsole, 0);
@@ -188,6 +266,7 @@ void test(){
     
     division_property(rounds, active, not_balanced);
     printf("Balanced Bits: \n");
+    print_balanced(not_balanced);
     for(int i=0; i<STATE; i++){
         if (std::find(not_balanced.begin(), not_balanced.end(), i) != not_balanced.end())
             continue;
