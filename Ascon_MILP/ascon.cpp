@@ -316,7 +316,14 @@ int even_polynomial(int rounds, vector<int> &input, vector<int> &output){
     }
     return balanced;
 }
-
+void set_input_last_row(vector<int> &active, int s, int e){
+    for(int i=0; i<STATE; i++){
+       active[i] = 0;
+    }
+    for(int i=s; i<e; i++){
+        active[constant_bits[i*5 + 4]] = 1;   
+    }
+}
 void set_input(vector<int> &active, int s, int e){
     for(int i=0; i<STATE; i++){
        active[i] = 1;
@@ -333,36 +340,82 @@ void set_output(vector<int> &active, int *V, int sbox_no){
         active[(64*V[i]) + sbox_no] = 1;
     }
 }
+void set_output_one(vector<int> &active, int j){
+    for(int i=0; i<STATE; i++){
+       active[i] = 0;
+    }
+    active[j] = 1;
+}
 void test_poly(){
-    int rounds = 5;
+    int rounds = 6;
     vector<int> input(STATE);
-    set_input(input, 21, 320);
+    set_input(input, 58, 320);
+    /* set_input_last_row(input, 0, 27); */
 
+    print_prop(input);
     vector<int> output(STATE);
 
     int V[10][2] = {{0,1},{0,2},{0,3},{0,4},{1,2},{1,3},{1,4},{2,3},{2,4},{3,4}};
+    vector<vector<int>> balanced_comb(64);
 
-    for(int s=0; s<1; s++){
+    for(int s=0; s<64; s++){
+        vector<int> temp;
         for(int i=0; i<10; i++){
             set_output(output, V[i], s);
-            print_prop(input);
-            print_prop(output);
+            /* print_prop(output); */
             int balanced = even_polynomial(rounds, input, output);
             cout << V[i][0] << " " << V[i][1] << ":";
             if (balanced == 1){
                 cout << "balanced" << endl;
+                temp.push_back(i);
             }
             else{
                 cout << "unknown" << endl;
             }
         }
+        balanced_comb[s] = temp;        
+    }
+    for(int s=0; s<64; s++){
+        cout <<"For sbox "<<s<<":";
+        for(int i: balanced_comb[s]){
+            cout << V[i][0] << " " << V[i][1] <<",";
+        }
+        cout <<"\n";
     }
 }
+void test_fixed_in_out(){
+    int rounds = 5;
+    vector<int> input(STATE);
+    set_input(input, 28, 320);
+    /* set_input_last_row(input, 0, 17); */
+
+    vector<int> output(STATE);
+
+    vector<int> not_balanced;
+
+    for(int i=0; i<320; i++){
+        set_output_one(output,i);
+        print_prop(input);
+        print_prop(output);
+        int b = even_polynomial(rounds, input, output);
+        if (b == 1){
+            cout << i << ": balanced" << endl;
+        }
+        else{
+            cout << i << ": unknown" << endl;
+            not_balanced.push_back(i);
+        }
+    }
+    printf("Balanced Bits: \n");
+    print_balanced(not_balanced);
+}
+
 void test(){
-    int rounds = 6;
+    int rounds = 5;
     vector<int > not_balanced;
     vector<int > active(STATE);
-    set_input(active, 12, 320);
+    /* set_input(active, 27, 320); */
+    set_input_last_row(active, 0, 15);
     print_prop(active);
     
     division_property(rounds, active, not_balanced);
@@ -377,7 +430,8 @@ void test(){
     cout<<endl;
 }
 int main(){
-    test();    
+    /* test(); */    
+    /* test_fixed_in_out(); */
     /* test_good_input(); */
-    /* test_poly(); */    
+    test_poly();    
 }
