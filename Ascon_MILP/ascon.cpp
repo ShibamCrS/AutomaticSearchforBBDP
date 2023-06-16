@@ -348,8 +348,10 @@ void set_output_one(vector<int> &active, int j){
 }
 void test_poly(){
     int rounds = 6;
+    int s = 58;
+    int e = 320;
     vector<int> input(STATE);
-    set_input(input, 58, 320);
+    set_input(input, s, e);
     /* set_input_last_row(input, 0, 27); */
 
     print_prop(input);
@@ -358,14 +360,22 @@ void test_poly(){
     int V[10][2] = {{0,1},{0,2},{0,3},{0,4},{1,2},{1,3},{1,4},{2,3},{2,4},{3,4}};
     vector<vector<int>> balanced_comb(64);
 
+    FILE *fp;
+    char fname[512];
+    sprintf(fname, "./data/comb_%d_%d.txt",rounds, s);
+    
+    fp = fopen(fname, "w");
+
     for(int s=0; s<64; s++){
         vector<int> temp;
+        fprintf(fp, "SB %d: ",s);  
         for(int i=0; i<10; i++){
             set_output(output, V[i], s);
-            /* print_prop(output); */
+            print_prop(output);
             int balanced = even_polynomial(rounds, input, output);
             cout << V[i][0] << " " << V[i][1] << ":";
             if (balanced == 1){
+                fprintf(fp, "%d, %d | ", V[i][0], V[i][1]);
                 cout << "balanced" << endl;
                 temp.push_back(i);
             }
@@ -373,8 +383,10 @@ void test_poly(){
                 cout << "unknown" << endl;
             }
         }
-        balanced_comb[s] = temp;        
+        fprintf(fp, "\n");
+        balanced_comb[s] = temp;
     }
+    fclose(fp); 
     for(int s=0; s<64; s++){
         cout <<"For sbox "<<s<<":";
         for(int i: balanced_comb[s]){
