@@ -366,14 +366,15 @@ void test_poly(){
     
     fp = fopen(fname, "w");
 
-    for(int s=0; s<64; s++){
+    for(int s=32; s<33; s++){
         vector<int> temp;
         fprintf(fp, "SB %d: ",s);  
+        printf("SB %d: ",s);  
         for(int i=0; i<10; i++){
+            cout << V[i][0] << " " << V[i][1] << ":";
             set_output(output, V[i], s);
             print_prop(output);
             int balanced = even_polynomial(rounds, input, output);
-            cout << V[i][0] << " " << V[i][1] << ":";
             if (balanced == 1){
                 fprintf(fp, "%d, %d | ", V[i][0], V[i][1]);
                 cout << "balanced" << endl;
@@ -385,6 +386,7 @@ void test_poly(){
         }
         fprintf(fp, "\n");
         balanced_comb[s] = temp;
+        fflush(fp);
     }
     fclose(fp); 
     for(int s=0; s<64; s++){
