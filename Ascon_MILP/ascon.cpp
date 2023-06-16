@@ -384,7 +384,7 @@ void test_poly(){
     }
 }
 void test_fixed_in_out(){
-    int rounds = 5;
+    int rounds = 3;
     vector<int> input(STATE);
     set_input(input, 28, 320);
     /* set_input_last_row(input, 0, 17); */
@@ -411,11 +411,11 @@ void test_fixed_in_out(){
 }
 
 void test(){
-    int rounds = 5;
+    int rounds = 3;
     vector<int > not_balanced;
     vector<int > active(STATE);
-    /* set_input(active, 27, 320); */
-    set_input_last_row(active, 0, 15);
+    set_input(active, 9, 320);
+    /* set_input_last_row(active, 0, 17); */
     print_prop(active);
     
     division_property(rounds, active, not_balanced);
@@ -430,8 +430,8 @@ void test(){
     cout<<endl;
 }
 int main(){
-    /* test(); */    
+    test();    
     /* test_fixed_in_out(); */
     /* test_good_input(); */
-    test_poly();    
+    /* test_poly(); */    
 }
