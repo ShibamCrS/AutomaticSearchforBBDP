@@ -258,10 +258,10 @@ void set_input(vector<int> &active, int s, int e){
     }
 }
 void test(){
-    int rounds = 5;
+    int rounds = 6;
     vector<int > not_balanced;
     vector<int > active(STATE);
-    set_input(active, 12, 320);
+    set_input(active, 27, 320);
     print_prop(active);
     
     division_property(rounds, active, not_balanced);
