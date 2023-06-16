@@ -347,9 +347,11 @@ void set_output_one(vector<int> &active, int j){
     active[j] = 1;
 }
 void test_poly(){
-    int rounds = 6;
+    int rounds = 5;
+    int s = 27;
+    int e = 320;
     vector<int> input(STATE);
-    set_input(input, 58, 320);
+    set_input(input, s, e);
     /* set_input_last_row(input, 0, 27); */
 
     print_prop(input);
@@ -358,14 +360,22 @@ void test_poly(){
     int V[10][2] = {{0,1},{0,2},{0,3},{0,4},{1,2},{1,3},{1,4},{2,3},{2,4},{3,4}};
     vector<vector<int>> balanced_comb(64);
 
+    FILE *fp;
+    char fname[512];
+    sprintf(fname, "./data/comb_%d_%d.txt",rounds, s);
+    
+    fp = fopen(fname, "w");
+
     for(int s=0; s<64; s++){
         vector<int> temp;
+        fprintf(fp, "SB %d: ",s);  
         for(int i=0; i<10; i++){
             set_output(output, V[i], s);
-            /* print_prop(output); */
+            print_prop(output);
             int balanced = even_polynomial(rounds, input, output);
             cout << V[i][0] << " " << V[i][1] << ":";
             if (balanced == 1){
+                fprintf(fp, "%d, %d | ", V[i][0], V[i][1]);
                 cout << "balanced" << endl;
                 temp.push_back(i);
             }
@@ -373,8 +383,10 @@ void test_poly(){
                 cout << "unknown" << endl;
             }
         }
-        balanced_comb[s] = temp;        
+        fprintf(fp, "\n");
+        balanced_comb[s] = temp;
     }
+    fclose(fp); 
     for(int s=0; s<64; s++){
         cout <<"For sbox "<<s<<":";
         for(int i: balanced_comb[s]){
@@ -411,11 +423,11 @@ void test_fixed_in_out(){
 }
 
 void test(){
-    int rounds = 3;
+    int rounds = 6;
     vector<int > not_balanced;
     vector<int > active(STATE);
-    set_input(active, 9, 320);
-    /* set_input_last_row(active, 0, 17); */
+    set_input(active, 27, 320);
+    /* set_input_last_row(active, 0, 15); */
     print_prop(active);
     
     division_property(rounds, active, not_balanced);
@@ -430,8 +442,8 @@ void test(){
     cout<<endl;
 }
 int main(){
-    test();    
+    /* test(); */    
     /* test_fixed_in_out(); */
     /* test_good_input(); */
-    /* test_poly(); */    
+    test_poly();    
 }
