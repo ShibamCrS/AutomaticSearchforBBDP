@@ -143,7 +143,7 @@ void division_property(int rounds, vector<int> &active, vector<int> &not_balance
         model.optimize();
         if ( model.get( GRB_IntAttr_Status ) == GRB_OPTIMAL ){
             double obj_value = round(model.get(GRB_DoubleAttr_ObjVal));
-            cout << "Obj " << obj_value << endl; 
+            /* cout << "Obj " << obj_value << endl; */ 
             /* scanf("continue?"); */
             if (obj_value > 1){
                 flag = true;
@@ -152,14 +152,14 @@ void division_property(int rounds, vector<int> &active, vector<int> &not_balance
             
             else{
                 
-                print_trail(rounds, X, model);
+                /* print_trail(rounds, X, model); */
                 for ( int x=0; x<STATE; x++){
                     if ( round( X[rounds][x].get( GRB_DoubleAttr_Xn ) ) == 1 ){
                         counter++;
                         not_balanced.push_back(x);
                         //model.addConstr(X[rounds][x] == 0);
                         X[rounds][x].set(GRB_DoubleAttr_UB, 0);
-                        cout << x << " " << counter << endl;
+                        /* cout << x << " " << counter << endl; */
                         break;
                     }
                 }
@@ -277,12 +277,67 @@ void test_poly(){
         for(int s=0; s<32; s++){
             for(int i=0; i<6; i++){
                 set_output(output, V[i], s);
-                print_prop(input);
-                print_prop(output);
+                /* print_prop(input); */
+                /* print_prop(output); */
                 int balanced = even_polynomial(rounds, input, output);
                 cout << j << " " << V[i][0] << " " << V[i][1] << ":";
                 if (balanced == 1){
                     cout << "balanced" << endl;
+                    /* scanf("continue?"); */
+                }
+                else{
+                    /* cout << "unknown" << endl; */
+                }
+            }
+        }
+    }
+}
+void active_one_sbox(vector<int> &active, int i){
+    active[4*i] = 1;
+    active[4*i+1] = 1;
+    active[4*i+2] = 1;
+    active[4*i+3] = 1;
+}
+void test_invariance(){
+    int rounds = 5;
+    vector<int > not_balanced;
+    /* vector<int > active(STATE, 0); */
+
+    /* for(int j=0; j<32; j++){ */
+    /*     vector<int > active(STATE, 0); */
+    /*     active_one_sbox(active, j); */
+    /*     print_prop(active); */
+    /*     vector<int > not_balanced; */
+    /*     division_property(rounds, active, not_balanced); */
+    /*     printf("Balanced Bits: \n"); */
+    /*     for(int i=0; i<STATE; i++){ */
+    /*         if (std::find(not_balanced.begin(), not_balanced.end(), i) != not_balanced.end()) */
+    /*             continue; */
+    /*         else */
+    /*             cout << i << " "; */
+    /*     } */
+    /*     printf("\n %ld \n", not_balanced.size()); */
+    /*     cout<<endl; */
+    /* } */
+    int V[6][2] = {{0,1}, {0,2}, {0,3}, {1,2}, {1,3}, {2,3}};
+    vector<int> output(STATE);
+    vector<int> input(STATE);
+    for(int j=0; j<16; j++){
+        vector<int > input(STATE, 0);
+        active_one_sbox(input, j);
+        print_prop(input);
+
+        for(int s=0; s<16; s++){
+            for(int i=0; i<6; i++){
+                set_output(output, V[i], s);
+                /* print_prop(input); */
+                /* print_prop(output); */
+                int balanced = even_polynomial(rounds, input, output);
+                if (balanced == 1){
+                    cout << "balanced" << endl;
+                    cout << s << " " << j << " " << V[i][0] << " " << V[i][1] << ":";
+                    print_prop(input);
+                    print_prop(output);
                     scanf("continue?");
                 }
                 else{
@@ -308,6 +363,7 @@ void test(){
         else 
            cout << i << " ";
     }
+    printf("\n %ld \n", not_balanced.size());
     cout<<endl;
 }
 void test_good_input(){
@@ -336,7 +392,8 @@ void test_good_input(){
     cout << endl;
 }
 int main(){
-    test();    
+    test_invariance();
+    /* test(); */    
     /* test_good_input(); */
     /* test_poly(); */    
 }

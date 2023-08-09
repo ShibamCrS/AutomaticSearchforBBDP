@@ -1,4 +1,5 @@
-TARGET=ascon
+# TARGET=ascon
+TARGET=ascon_degree
 # TARGET=find_Lin
 
 CC=g++
