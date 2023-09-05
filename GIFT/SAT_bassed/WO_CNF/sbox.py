@@ -1,0 +1,149 @@
+class Sbox:
+	def __init__(self,sbox):
+		self.sbox = sbox
+		self.size = self.SboxSize() #size = n mean sbox is a map from F_2^n to F_2^n
+		self.len = len(sbox) #length of sbox, if size=n then len=2^n
+		self.trails = dict()
+		self.possible_pattern = [ ]
+		self.Impossible_pattern = [ ]
+	def SboxSize(self):
+		"""
+		This function returns size of the sbox
+		size = n mean sbox is a map from F_2^n to F_2^n
+		"""
+		l = format(len(self.sbox),"b")
+		return (len(l) - 1)
+	def BitProduct(self,u,x):
+		"""
+		Returns pi_u(x)
+		"""
+		if (u & x) == u:
+			return 1 # u belongs to Prec(x) 
+		else:
+			return 0 
+		
+	def TruthTable(self,u):
+		"""
+		Returns truth table of pi_u
+		note that pi_u(y)=y^u is a boolean function
+		""" 
+		temp =[u for i in range(0,self.len)]
+		table = list(map(self.BitProduct,temp,self.sbox))
+		return table
+	def ProcessTable(self, table):
+		"""
+		Process the truth table to get the ANF of the boolean function
+		we use table size to calculate the SBOXSIZE
+		"""
+		for i in range(0, self.size):
+			for j in range(0, 2**i):
+				for k in range(0, 2**(self.size - 1 - i)):
+					table[k + 2**(self.size - 1 - i) + j*(2**(self.size - i))] =\
+	                table[k + 2**(self.size - 1 - i) + j*(2**(self.size - i))] ^\
+	                table[k + j*(2**(self.size - i))]
+	
+	def ANF_bit_product_function(self):
+		"""
+		Returns ANF of pi_u(y) for all u
+		Returns a list of lists
+		where uth list is ANF of pi_u(y)
+		"""
+		
+		ANF = [[] for u in range(0,self.len)]
+		for u in range(1,self.len):
+			table = self.TruthTable(u)
+			self.ProcessTable(table)
+			temp = []
+			for j in range(0,self.len):
+				if table[j] != 0:
+					temp.append(j)
+			ANF[u] = temp
+		return ANF
+		
+	
+	def DivisionTrails(self):
+		ANF = self.ANF_bit_product_function()
+		self.trails[0] = [0]
+		
+		for i in range(1,self.len):
+			"""
+			Will check for all possible non-zero 
+			input property.
+			for example, if i = 5, then 
+			input division property = (0,1,0,1)
+			"""
+			output_vectors = []
+			for j in range(1,self.len):
+				flag = False
+				for k in ANF[j]:
+					if (i | k) == k: 
+						"""k is in Succ(i)"""
+						flag = True
+						"""pi_j(y) contains a monomial x^k where k is in Succ(i)
+					   	So we need to add (i,j) in CBDP."""
+						break
+				if flag:
+					redundant = []
+					add_j = True
+					"""
+				   	But j maybe redundant i.e there is (i,j1) in CBDP 
+				   	s.t. j1 is in Succ(j1)
+				   	Next few lines will check that
+					"""
+					for t in output_vectors:
+						if (t|j) == j:
+							"""
+							If already there is a vector t in output_vectors
+							so that j is in Succ(t), no need to add j
+							"""
+							add_j = False
+							break
+						elif (t|j)==t:
+							"""
+							If t is in Succ(j), then no need to keep t.
+							So adding a new j may remove some t.
+							"""
+							redundant.append(t)
+					if add_j:
+						for r in redundant:
+							output_vectors.remove(r)
+						output_vectors.append(j)
+			output_vectors.sort()
+			self.trails[i] = output_vectors
+	def get_trails(self):
+		if not self.trails:
+			self.DivisionTrails()
+		return self.trails
+		
+	def get_impossible(self,trail):
+		all_vectors = [v for v in range(self.len)]
+		return list(set(all_vectors) - set(trail))
+	def get_vec(self,i):
+		x = format(i, "016b")
+		x = list(reversed(list(map(int, list(x)))))
+		x = x[0:self.size]
+		x.reverse()
+		return x
+			
+	def PrintDivisionTrails(self, filename):
+		T = self.get_trails()
+		for vec_in in T:
+			impossible_list = self.get_impossible(T[vec_in])
+			impossible_list.sort()
+			for vec_out in self.trails[vec_in]:
+				self.possible_pattern.append(self.get_vec(vec_in) + self.get_vec(vec_out))
+			for vec_out in impossible_list:
+				self.Impossible_pattern.append(self.get_vec(vec_in) + self.get_vec(vec_out))
+		fileobj = open(filename, "w")
+		fileobj.write(str(len(self.possible_pattern))+"\n")
+		fileobj.write(str(len(self.Impossible_pattern))+"\n")
+		fileobj.write("Division Trails of sbox:\n")
+		for v in self.possible_pattern:
+			fileobj.write(str(v) + "\n")
+		#fileobj.write("\n")
+		fileobj.write("Impossible Division Trails of sbox:\n")
+		for v in self.Impossible_pattern:
+			fileobj.write(str(v) + "\n")
+		#fileobj.write("\n")
+		fileobj.close()
+		

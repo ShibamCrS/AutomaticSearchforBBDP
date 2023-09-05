@@ -71,7 +71,7 @@ void print_trail(int rounds, vector<vector<GRBVar>> &X, vector<vector<GRBVar>> &
             }
         }
         printf("X%2d: \n",r);
-        print_prop(term);
+        PRINT_VEC(term);
         cout <<"\n";
 
         term.clear();
@@ -84,27 +84,7 @@ void print_trail(int rounds, vector<vector<GRBVar>> &X, vector<vector<GRBVar>> &
             }
         }
         printf("Y%2d: \n",r);
-        print_prop(term);
+        PRINT_VEC(term);
         cout <<"\n";
     }
-}
-void print_balanced(vector<int> NB){
-    for(int i=0; i<STATE; i++){
-        if (std::find(NB.begin(), NB.end(), i) != NB.end())
-            printf("?");
-        else
-            printf("0");
-        if(i%64 == 63)
-            printf("\n");
-    }
-}
-
-string getCurrentSystemTime()
-{
-    auto tt = chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    struct tm* ptm = localtime(&tt);
-    char date[60] = { 0 };
-    sprintf(date, "%d-%02d-%02d-%02d:%02d:%02d", (int)ptm->tm_year + 1900, (int)ptm->tm_mon + 1, (int)ptm->tm_mday,
-                                        (int)ptm->tm_hour, (int)ptm->tm_min, (int)ptm->tm_sec);
-    return string(date);
 }

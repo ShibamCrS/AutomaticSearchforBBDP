@@ -1,4 +1,5 @@
 #include "utility.h"
+#include "model_utility.h"
 
 void sbox(GRBModel& model, vector<GRBVar>& x, vector<GRBVar>& y)
 {    
